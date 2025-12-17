@@ -3,156 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le parti del discorso - Dipartimento di Lettere - Attività creata parzialmente con l'aiuto dell'IA</title>
+    <title>Analisi Grammaticale</title>
     <style>
         :root { --primary: #630d0d; --gold: #b38b59; --bg: #f4f1ea; }
-        body { font-family: 'Palatino', 'Georgia', serif; background-color: var(--bg); padding: 20px; color: #333; }
-        .app-container { max-width: 850px; margin: 0 auto; background: #fff; border: 1px solid #dcd0b9; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
-        .header { background: var(--primary); color: white; padding: 25px; text-align: center; border-bottom: 5px solid var(--gold); }
-        .header h1 { margin: 0; letter-spacing: 2px; font-size: 1.8em; }
-        .content { padding: 30px; }
         
-        /* Timer e Progress Bar */
-        .timer-box { font-size: 1.5em; font-weight: bold; color: #e74c3c; text-align: right; margin-bottom: 10px; }
-        .bar-bg { background: #eee; height: 12px; border-radius: 6px; margin-bottom: 25px; overflow: hidden; }
-        .bar-fill { background: var(--gold); height: 100%; width: 0%; transition: 0.4s; }
+        body { 
+            font-family: 'Palatino', 'Georgia', serif; 
+            background-color: var(--bg); 
+            padding: 40px 20px; 
+            color: #333; 
+            margin: 0;
+        }
 
-        /* Bottoni Opzioni */
-        .btn-opt { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; background: #fff; cursor: pointer; text-align: left; font-size: 1.1em; border-radius: 5px; transition: 0.2s; }
-        .btn-opt:hover { background: #fdfaf0; border-color: var(--gold); transform: translateX(5px); }
+        /* Dimensioni aumentate dell'applicazione */
+        .app-container { 
+            max-width: 1100px; 
+            margin: 0 auto; 
+            background: #fff; 
+            border: 1px solid #dcd0b9; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+            border-radius: 12px; 
+            overflow: hidden; 
+        }
+
+        .header { 
+            background: var(--primary); 
+            color: white; 
+            padding: 40px; 
+            text-align: center; 
+            border-bottom: 8px solid var(--gold); 
+        }
+
+        .header h1 { margin: 0; letter-spacing: 3px; font-size: 2.5em; text-transform: uppercase; }
+        .header p { font-size: 1.2em; opacity: 0.9; margin-top: 10px; }
+
+        .content { padding: 50px; }
+
+        /* Timer e Progress Bar */
+        .timer-box { font-size: 2em; font-weight: bold; color: #e74c3c; text-align: right; margin-bottom: 15px; }
+        .bar-bg { background: #eee; height: 18px; border-radius: 9px; margin-bottom: 40px; overflow: hidden; border: 1px solid #ddd; }
+        .bar-fill { background: linear-gradient(90deg, var(--gold), #d4af37); height: 100%; width: 0%; transition: 0.5s; }
+
+        /* Testo domanda e Opzioni */
+        #q-text { font-size: 1.8em; margin-bottom: 35px; line-height: 1.4; color: var(--primary); font-weight: bold; }
+        
+        .btn-opt { 
+            display: block; 
+            width: 100%; 
+            padding: 22px; 
+            margin: 18px 0; 
+            border: 2px solid #eee; 
+            background: #fdfdfd; 
+            cursor: pointer; 
+            text-align: left; 
+            font-size: 1.4em; 
+            border-radius: 10px; 
+            transition: all 0.3s ease; 
+        }
+
+        .btn-opt:hover { 
+            background: #fdfaf0; 
+            border-color: var(--gold); 
+            transform: translateX(15px); 
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.05);
+        }
 
         /* Modal Risposta */
-        #modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:100; justify-content:center; align-items:center; }
-        .modal { background:white; padding:30px; max-width:500px; width: 90%; border-radius: 8px; text-align:center; border-top:10px solid var(--primary); }
+        #modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; justify-content:center; align-items:center; }
+        .modal { 
+            background:white; 
+            padding:50px; 
+            max-width:800px; 
+            width: 90%; 
+            border-radius: 15px; 
+            text-align:center; 
+            border-top: 12px solid var(--primary); 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        .modal h2 { font-size: 2.2em; margin-top: 0; }
+        .modal p { font-size: 1.4em; line-height: 1.6; color: #444; }
 
-        /* Certificato Finale */
-        #certificate { display: none; border: 10px double var(--gold); padding: 40px; text-align: center; background: white; margin-bottom: 30px; }
-        #certificate h1 { font-family: 'Palatino', serif; color: var(--primary); font-size: 2.5em; margin: 10px 0; }
-        .recap-item { margin-top: 10px; padding: 12px; border-left: 4px solid #e74c3c; background: #fff5f5; text-align: left; font-size: 0.95em; }
-        
-        .btn-action { background: var(--primary); color: white; border: none; padding: 15px 25px; cursor: pointer; border-radius: 4px; font-weight: bold; margin: 5px; font-size: 1em; }
+        /* Certificato e Voto */
+        #certificate { display: none; border: 15px double var(--gold); padding: 60px; text-align: center; background: white; margin-bottom: 40px; }
+        #certificate h1 { font-size: 3.5em; color: var(--primary); margin: 20px 0; }
+        .voto-box { 
+            font-size: 4em; 
+            font-weight: bold; 
+            color: var(--primary); 
+            margin: 20px 0; 
+            border: 4px solid var(--gold); 
+            display: inline-block; 
+            padding: 10px 40px; 
+            border-radius: 15px; 
+            background: #fffcf5;
+        }
+
+        .recap-item { margin-top: 15px; padding: 20px; border-left: 6px solid #e74c3c; background: #fff5f5; text-align: left; font-size: 1.1em; border-radius: 0 10px 10px 0; }
+
+        .btn-action { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 20px 40px; 
+            cursor: pointer; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            font-size: 1.2em; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
         .btn-action:hover { background: #821212; }
-        input[type="text"] { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1.1em; }
+
+        input[type="text"] { 
+            width: 100%; 
+            padding: 18px; 
+            margin-bottom: 30px; 
+            border: 2px solid #ddd; 
+            border-radius: 8px; 
+            font-size: 1.3em; 
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
-<div class="app-container">
+<div class="app-container" id="main-app">
     <div class="header">
         <h1>DIPARTIMENTO DI LETTERE</h1>
-        <p>Analisi Grammaticale</p>
+        <p>Analisi Grammaticale - Attività generata parzialmente con strumenti di IA</p>
     </div>
 
     <div class="content" id="setup">
-        <h2>Sessione online</h2>
-        <p>L'attività consiste in <b>50 quesiti</b> di analisi grammaticale. Hai 30 secondi per ogni domanda.</p>
-        <label for="student-name">Inserisci il tuo Nome:</label>
-        <input type="text" id="student-name" placeholder="Esempio: Ulisse">
-        <button class="btn-action" onclick="startQuiz()">INIZIA</button>
+        <h2 style="font-size: 2em;">Benvenuto/a</h2>
+        <p style="font-size: 1.3em; line-height: 1.6;">L'attività consiste in <b>50 quesiti</b> di analisi grammaticale. <br>Tempo a disposizione: <b>30 secondi</b> per ogni risposta.</p>
+        <div style="max-width: 600px; margin: 40px auto;">
+            <label style="display:block; margin-bottom:10px; font-weight:bold; font-size:1.1em;">Inserisci Nome:</label>
+            <input type="text" id="student-name" placeholder="Esempio: Ulisse">
+            <button class="btn-action" onclick="startQuiz()">INIZIA</button>
+        </div>
     </div>
 
     <div class="content" id="quiz-ui" style="display:none;">
-        <div class="timer-box">Tempo residuo: <span id="timer">30</span>s</div>
+        <div class="timer-box">⏳ <span id="timer">30</span>s</div>
         <div class="bar-bg"><div id="bar-fill" class="bar-fill"></div></div>
-        <h3 id="q-text" style="font-size: 1.3em; margin-bottom: 20px;"></h3>
+        <div id="q-text"></div>
         <div id="options"></div>
     </div>
 
     <div class="content" id="results" style="display:none;">
         <div id="certificate">
-            <p style="text-transform: uppercase; letter-spacing: 2px;">Repubblica delle Lettere</p>
-            <p>Si attesta che lo studente</p>
+            <p style="text-transform: uppercase; letter-spacing: 3px; font-weight: bold; color: #777;">Repubblica delle Lettere</p>
+            <p style="font-size: 1.4em;">Si attesta solennemente che lo studente</p>
             <h1 id="cert-name"></h1>
-            <p>ha superato la prova di analisi grammaticale con il punteggio di</p>
-            <h2 id="cert-score" style="color: var(--gold); font-size: 2em;"></h2>
-            <p><em>Rilasciato in data odierna dal sistema automatizzato di valutazione.</em></p>
+            <p style="font-size: 1.4em;">ha completato la prova di Analisi Grammaticale con voto:</p>
+            <div class="voto-box" id="cert-voto"></div>
+            <p id="cert-giudizio" style="font-size: 1.5em; font-weight: bold; font-style: italic; margin: 20px 0;"></p>
+            <p style="color: #666;">Punteggio complessivo: <span id="cert-score"></span>/50</p>
         </div>
         
-        <h3>Revisione Errori</h3>
+        <h3 style="font-size: 1.8em; border-bottom: 2px solid var(--primary); padding-bottom: 10px;">Revisione Errori</h3>
         <div id="recap-list"></div>
-        <br>
-        <button class="btn-action" onclick="window.print()">STAMPA CERTIFICATO</button>
-        <button class="btn-action" style="background:#777" onclick="location.reload()">RIPETI LA PROVA</button>
+        <div style="margin-top: 40px; text-align: center;">
+            <button class="btn-action" onclick="window.print()">STAMPA CERTIFICATO</button>
+            <button class="btn-action" style="background:#555" onclick="location.reload()">ESCI</button>
+        </div>
     </div>
 </div>
 
 <div id="modal-overlay">
     <div class="modal">
         <h2 id="m-title"></h2>
-        <p id="m-text" style="font-size: 1.1em; line-height: 1.5; color: #555;"></p>
-        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-        <button class="btn-action" onclick="nextQuestion()">PROSEGUI</button>
+        <p id="m-text"></p>
+        <button class="btn-action" onclick="nextQuestion()" style="margin-top: 20px;">PROSEGUI</button>
     </div>
 </div>
 
 <script>
 const db = [
-    // 1-10: ARTICOLI E NOMI
-    {q: "Analisi di 'lo':", a: ["Articolo determinativo, masch. sing.", "Pronome relativo", "Articolo partitivo"], c: 0, e: "Si usa davanti a nomi maschili che iniziano per z, s+consonante, gn, ecc."},
-    {q: "Analisi di 'uno':", a: ["Articolo determinativo", "Articolo indeterminativo, masch. sing.", "Nome comune"], c: 1, e: "Indica un elemento generico della categoria."},
-    {q: "Analisi di 'delle' (es. Ho comprato delle rose):", a: ["Preposizione semplice", "Articolo partitivo, femm. plur.", "Aggettivo"], c: 1, e: "Equivale a 'alcune rose'."},
-    {q: "Analisi di 'gregge':", a: ["Nome individuale", "Nome collettivo, masch. sing.", "Nome astratto"], c: 1, e: "Indica un insieme di pecore o capre."},
-    {q: "Analisi di 'altalena':", a: ["Nome comune di cosa, femm. sing.", "Nome proprio", "Nome collettivo"], c: 0, e: "Nome concreto, femminile, singolare, primitivo."},
-    {q: "Analisi di 'coraggio':", a: ["Nome concreto", "Nome astratto, masch. sing.", "Aggettivo"], c: 1, e: "Indica un concetto non percepibile con i sensi."},
-    {q: "Analisi di 'braccia' (plur. di braccio):", a: ["Nome sovrabbondante, femm. plur.", "Nome difettivo", "Nome invariabile"], c: 0, e: "Plurale irregolare (le braccia vs i bracci)."},
-    {q: "Analisi di 'occhiali':", a: ["Nome difettivo del singolare", "Nome collettivo", "Nome composto"], c: 0, e: "Si usa quasi esclusivamente al plurale."},
-    {q: "Analisi di 'capostazione':", a: ["Nome derivato", "Nome composto, masch. sing.", "Nome alterato"], c: 1, e: "Formato dall'unione di capo + stazione."},
-    {q: "Analisi di 'postino':", a: ["Nome primitivo", "Nome derivato", "Nome accrescitivo"], c: 1, e: "Deriva dal nome primitivo 'posta'."},
+    // --- NOMI E ARTICOLI (1-12) ---
+    {q: "Analisi di 'lo' (es. lo zaino):", a: ["Articolo determinativo, masch. sing.", "Articolo indeterminativo", "Pronome relativo"], c: 0, e: "Si usa davanti a nomi maschili singolari che iniziano per z, s+consonante, gn, ecc."},
+    {q: "Analisi di 'delle' (es. mangio delle mele):", a: ["Preposizione semplice", "Articolo partitivo, femm. plur.", "Articolo determinativo"], c: 1, e: "Indica una quantità imprecisata ('alcune')."},
+    {q: "Analisi di 'sciame':", a: ["Nome collettivo, masch. sing.", "Nome individuale", "Nome astratto"], c: 0, e: "Indica un insieme di api."},
+    {q: "Analisi di 'braccia' (plur. di braccio):", a: ["Nome difettivo", "Nome sovrabbondante, femm. plur.", "Nome invariabile"], c: 1, e: "I nomi sovrabbondanti hanno due plurali (braccia/bracci)."},
+    {q: "Analisi di 'libertà':", a: ["Nome concreto", "Nome astratto, femm. sing.", "Nome proprio"], c: 1, e: "Indica un concetto non tangibile."},
+    {q: "Analisi di 'città':", a: ["Nome invariabile", "Nome difettivo", "Nome alterato"], c: 0, e: "La forma resta identica al singolare e al plurale."},
+    {q: "Analisi di 'postino':", a: ["Nome primitivo", "Nome derivato", "Nome composto"], c: 1, e: "Deriva dal nome primitivo 'posta'."},
+    {q: "Analisi di 'pescecane':", a: ["Nome composto, masch. sing.", "Nome derivato", "Nome alterato"], c: 0, e: "Formato dall'unione di due nomi: pesce + cane."},
+    {q: "Analisi di 'casuccia':", a: ["Nome diminutivo", "Nome vezzeggiativo (alterato)", "Nome dispregiativo"], c: 1, e: "Il suffisso -uccia indica affetto o piccolezza."},
+    {q: "Analisi di 'latte':", a: ["Nome difettivo del plurale", "Nome sovrabbondante", "Nome collettivo"], c: 0, e: "È un nome che non ha il plurale."},
+    {q: "Analisi di 'un' (es. un'amica):", a: ["Articolo indeterminativo, femm. sing.", "Articolo determinativo", "Aggettivo"], c: 0, e: "Si usa con apostrofo solo davanti a nomi femminili che iniziano per vocale."},
+    {q: "Analisi di 'nipote':", a: ["Nome di genere comune", "Nome promiscuo", "Nome indipendente"], c: 0, e: "Il genere si capisce solo dall'articolo (il/la nipote)."},
 
-    // 11-20: AGGETTIVI
-    {q: "Analisi di 'amaro':", a: ["Aggettivo qualificativo, grado positivo", "Avverbio di modo", "Nome comune"], c: 0, e: "Esprime una qualità semplice del nome."},
-    {q: "Analisi di 'più alto':", a: ["Superlativo assoluto", "Comparativo di maggioranza", "Grado positivo"], c: 1, e: "Mette a confronto due termini sottolineando la maggioranza."},
-    {q: "Analisi di 'ottimo':", a: ["Superlativo relativo", "Superlativo assoluto", "Comparativo"], c: 1, e: "Forma organica per 'buonissimo'."},
-    {q: "Analisi di 'questo':", a: ["Aggettivo dimostrativo, masch. sing.", "Pronome personale", "Articolo"], c: 0, e: "Indica vicinanza a chi parla."},
-    {q: "Analisi di 'mio':", a: ["Aggettivo possessivo, masch. sing.", "Pronome relativo", "Articolo"], c: 0, e: "Indica il possesso riferito alla 1a pers. singolare."},
-    {q: "Analisi di 'alcuni':", a: ["Aggettivo indefinito, masch. plur.", "Numerale", "Qualificativo"], c: 0, e: "Indica una quantità non precisata."},
-    {q: "Analisi di 'venti' (es. venti euro):", a: ["Aggettivo numerale cardinale", "Nome comune", "Aggettivo numerale ordinale"], c: 0, e: "Indica una quantità numerica precisa."},
-    {q: "Analisi di 'centesimo':", a: ["Numerale cardinale", "Numerale ordinale", "Nome astratto"], c: 1, e: "Indica l'ordine in una successione."},
-    {q: "Analisi di 'bellissimo':", a: ["Grado positivo", "Superlativo assoluto", "Superlativo relativo"], c: 1, e: "Indica il massimo grado di una qualità."},
-    {q: "Analisi di 'quale' (in: quale libro?):", a: ["Aggettivo interrogativo", "Pronome personale", "Congiunzione"], c: 0, e: "Introduce una domanda riferendosi a un nome."},
+    // --- AGGETTIVI (13-22) ---
+    {q: "Analisi di 'altissimo':", a: ["Aggettivo qualificativo, grado positivo", "Superlativo assoluto", "Comparativo di maggioranza"], c: 1, e: "Indica il grado massimo senza confronti."},
+    {q: "Analisi di 'migliore':", a: ["Comparativo di maggioranza", "Superlativo assoluto", "Grado positivo"], c: 0, e: "È la forma speciale per dire 'più buono'."},
+    {q: "Analisi di 'questo' (es. questo libro):", a: ["Aggettivo dimostrativo", "Pronome dimostrativo", "Aggettivo possessivo"], c: 0, e: "Accompagna il nome indicando vicinanza a chi parla."},
+    {q: "Analisi di 'mio' (es. il mio gatto):", a: ["Aggettivo possessivo, masch. sing.", "Pronome possessivo", "Articolo"], c: 0, e: "Indica l'appartenenza a chi parla."},
+    {q: "Analisi di 'venti' (es. venti persone):", a: ["Aggettivo numerale cardinale", "Numerale ordinale", "Nome comune"], c: 0, e: "Indica un numero preciso."},
+    {q: "Analisi di 'alcuni' (es. alcuni ragazzi):", a: ["Aggettivo indefinito, masch. plur.", "Aggettivo qualificativo", "Pronome"], c: 0, e: "Indica una quantità generica."},
+    {q: "Analisi di 'celeberrimo':", a: ["Superlativo assoluto (forma colta)", "Comparativo", "Grado positivo"], c: 0, e: "Superlativo di 'celebre'."},
+    {q: "Analisi di 'terzo':", a: ["Numerale cardinale", "Numerale ordinale", "Aggettivo qualificativo"], c: 1, e: "Indica la posizione in una serie."},
+    {q: "Analisi di 'povero' (in: un pover'uomo):", a: ["Aggettivo qualificativo", "Sostantivo", "Articolo"], c: 0, e: "Attribuisce una qualità al nome uomo."},
+    {q: "Analisi di 'quale' (in: quale gusto preferisci?):", a: ["Aggettivo interrogativo", "Pronome relativo", "Esclamazione"], c: 0, e: "Introduce una domanda riferita a un nome."},
 
-    // 21-30: PRONOMI
-    {q: "Analisi di 'io':", a: ["Pronome personale soggetto", "Pronome complemento", "Articolo"], c: 0, e: "Indica chi compie l'azione nella 1a pers. sing."},
-    {q: "Analisi di 'me':", a: ["Pronome personale sogg.", "Pronome personale compl. (forma tonica)", "Aggettivo"], c: 1, e: "Si usa dopo preposizioni o per enfasi."},
-    {q: "Analisi di 'ne' (es. ne voglio):", a: ["Particella pronominale", "Congiunzione", "Avverbio"], c: 0, e: "Sostituisce 'di ciò', 'di questo'."},
-    {q: "Analisi di 'che' (in: il ragazzo che corre):", a: ["Congiunzione", "Pronome relativo", "Pronome interrogativo"], c: 1, e: "Sostituisce il nome precedente collegando due frasi."},
-    {q: "Analisi di 'chiunque':", a: ["Pronome indefinito", "Pronome relativo", "Aggettivo"], c: 0, e: "Indica una persona qualsiasi, senza distinzione."},
-    {q: "Analisi di 'lo' (in: lo ascolto):", a: ["Articolo", "Pronome personale compl. (forma atona)", "Verbo"], c: 1, e: "In questo caso 'lo' sta per 'lui' (complemento oggetto)."},
-    {q: "Analisi di 'noi':", a: ["Pronome personale sogg. 1 pers. plur.", "Aggettivo possessivo", "Nome"], c: 0, e: "Indica il plurale di chi parla."},
-    {q: "Analisi di 'codesto':", a: ["Pronome dimostrativo", "Pronome relativo", "Articolo"], c: 0, e: "Indica qualcosa vicino a chi ascolta."},
-    {q: "Analisi di 'qualcuno':", a: ["Pronome indefinito", "Aggettivo qualificativo", "Numerale"], c: 0, e: "Indica una persona indeterminata."},
-    {q: "Analisi di 'si' (in: si pettina):", a: ["Pronome riflessivo 3 pers.", "Affermazione", "Congiunzione"], c: 0, e: "L'azione del verbo ricade sul soggetto stesso."},
+    // --- PRONOMI (23-32) ---
+    {q: "Analisi di 'tu':", a: ["Pronome personale soggetto", "Pronome personale compl.", "Aggettivo"], c: 0, e: "Indica la 2a persona singolare che compie l'azione."},
+    {q: "Analisi di 'lo' (in: lo vedo):", a: ["Articolo determinativo", "Pronome personale compl. (atono)", "Pronome relativo"], c: 1, e: "In questo caso sostituisce 'lui' (compl. oggetto)."},
+    {q: "Analisi di 'cui' (in: l'amico di cui parlo):", a: ["Pronome relativo invariabile", "Pronome interrogativo", "Congiunzione"], c: 0, e: "Serve a legare due frasi."},
+    {q: "Analisi di 'ne' (in: ne ho presi due):", a: ["Particella pronominale", "Congiunzione", "Avverbio di negazione"], c: 0, e: "Significa 'di ciò', 'di essi'."},
+    {q: "Analisi di 'ci' (in: ci andiamo domani):", a: ["Pronome personale", "Particella pronominale con valore avverbiale", "Articolo"], c: 1, e: "In questo caso significa 'in quel luogo'."},
+    {q: "Analisi di 'qualcuno':", a: ["Pronome indefinito, masch. sing.", "Aggettivo indefinito", "Nome"], c: 0, e: "Sostituisce il nome di una persona non precisata."},
+    {q: "Analisi di 'si' (in: Luca si lava):", a: ["Pronome riflessivo", "Congiunzione", "Affermazione"], c: 0, e: "L'azione del verbo si riflette sul soggetto."},
+    {q: "Analisi di 'egli':", a: ["Pronome personale sogg. 3 pers. sing.", "Pronome dimostrativo", "Aggettivo"], c: 0, e: "Usato per indicare la persona di cui si parla."},
+    {q: "Analisi di 'chi' (in: chi ha bussato?):", a: ["Pronome interrogativo", "Pronome relativo", "Aggettivo"], c: 0, e: "Sostituisce il nome in una domanda."},
+    {q: "Analisi di 'loro' (in: ho dato loro un libro):", a: ["Pronome personale compl. (forma tonica)", "Aggettivo possessivo", "Articolo"], c: 0, e: "Funge da complemento di termine (a essi)."},
 
-    // 31-40: VERBI
-    {q: "Analisi di 'abbiamo visto':", a: ["Passato remoto", "Passato prossimo, indicativo", "Trapassato prossimo"], c: 1, e: "Azione passata conclusa ma vicina al presente."},
-    {q: "Analisi di 'leggere':", a: ["Infinito presente", "Gerundio", "Participio"], c: 0, e: "Modo indefinito, tempo presente."},
-    {q: "Analisi di 'che essi amino':", a: ["Congiuntivo presente", "Indicativo presente", "Condizionale"], c: 0, e: "Modo del desiderio/dubbio."},
-    {q: "Analisi di 'avrei dormito':", a: ["Condizionale passato", "Condizionale presente", "Futuro anteriore"], c: 0, e: "Esprime un'ipotesi nel passato."},
-    {q: "Analisi di 'essendo uscito':", a: ["Gerundio passato", "Gerundio presente", "Participio"], c: 0, e: "Forma composta del gerundio."},
-    {q: "Analisi di 'fosti':", a: ["Passato remoto di essere, 2 pers. sing.", "Imperfetto", "Congiuntivo"], c: 0, e: "Azione conclusa nel tempo remoto."},
-    {q: "Analisi di 'parlante':", a: ["Participio presente", "Participio passato", "Gerundio"], c: 0, e: "Modo indefinito che funge spesso da aggettivo."},
-    {q: "Analisi di 'ebbi avuto':", a: ["Trapassato remoto", "Trapassato prossimo", "Passato remoto"], c: 0, e: "Si usa dopo congiunzioni temporali per azioni anteriori al passato remoto."},
-    {q: "Analisi di 'mangeranno':", a: ["Futuro semplice, 3 pers. plur.", "Presente", "Condizionale"], c: 0, e: "Azione che accadrà nel tempo futuro."},
-    {q: "Analisi di 'stia':", a: ["Congiuntivo presente di stare", "Imperativo", "Indicativo"], c: 0, e: "Modo congiuntivo, 1/2/3 pers. singolare."},
+    // --- VERBI (33-42) ---
+    {q: "Analisi di 'ebbi cantato':", a: ["Passato remoto", "Trapassato remoto", "Trapassato prossimo"], c: 1, e: "Tempo composto dell'indicativo che indica anteriorità al passato remoto."},
+    {q: "Analisi di 'leggendo':", a: ["Gerundio presente", "Gerundio passato", "Participio"], c: 0, e: "Modo indefinito usato per indicare contemporaneità o modo."},
+    {q: "Analisi di 'che essi scrivano':", a: ["Congiuntivo presente", "Indicativo presente", "Imperativo"], c: 0, e: "Modo del dubbio o del desiderio."},
+    {q: "Analisi di 'sarebbe':", a: ["Condizionale presente di essere", "Futuro semplice", "Congiuntivo imperfetto"], c: 0, e: "Indica un'azione possibile a certe condizioni."},
+    {q: "Analisi di 'avevano visto':", a: ["Trapassato prossimo", "Passato prossimo", "Passato remoto"], c: 0, e: "Azione avvenuta nel passato prima di un'altra azione passata."},
+    {q: "Analisi di 'partito' (es. lui è partito):", a: ["Participio passato", "Participio presente", "Infinito"], c: 0, e: "Forma verbale usata per i tempi composti."},
+    {q: "Analisi di 'parla!':", a: ["Imperativo presente, 2 pers. sing.", "Indicativo presente", "Gerundio"], c: 0, e: "Esprime un ordine o un'esortazione."},
+    {q: "Analisi di 'potere' (in: posso andare):", a: ["Verbo servile", "Verbo ausiliare", "Verbo impersonale"], c: 0, e: "Accompagna un altro verbo all'infinito precisandone il senso."},
+    {q: "Analisi di 'piovve':", a: ["Verbo impersonale, passato remoto", "Verbo riflessivo", "Verbo servile"], c: 0, e: "I verbi atmosferici non hanno un soggetto determinato."},
+    {q: "Analisi di 'saremo stati premiati':", a: ["Futuro anteriore passivo", "Futuro semplice attivo", "Condizionale"], c: 0, e: "Tempo futuro anteriore espresso in forma passiva."},
 
-    // 41-50: PARTI INVARIABILI (Avverbi, Prep, Cong, Inter)
-    {q: "Analisi di 'presto':", a: ["Avverbio di tempo", "Avverbio di modo", "Aggettivo"], c: 0, e: "Indica il momento in cui avviene l'azione."},
-    {q: "Analisi di 'su':", a: ["Preposizione semplice", "Preposizione articolata", "Congiunzione"], c: 0, e: "Una delle 9 preposizioni semplici italiane."},
-    {q: "Analisi di 'nello':", a: ["Preposizione articolata (in+lo)", "Avverbio", "Nome"], c: 0, e: "Fusione di una preposizione e un articolo."},
-    {q: "Analisi di 'male' (es. si sente male):", a: ["Aggettivo", "Avverbio di modo", "Nome"], c: 1, e: "Modifica il verbo indicando il modo dell'azione."},
-    {q: "Analisi di 'e':", a: ["Congiunzione coordinante copulativa", "Avverbio", "Interiezione"], c: 0, e: "Unisce due elementi in modo semplice."},
-    {q: "Analisi di 'tuttavia':", a: ["Congiunzione avversativa", "Preposizione", "Avverbio di luogo"], c: 0, e: "Introduce una contrapposizione."},
-    {q: "Analisi di 'non':", a: ["Avverbio di negazione", "Esclamazione", "Pronome"], c: 0, e: "Nega il significato del verbo."},
-    {q: "Analisi di 'forse':", a: ["Avverbio di dubbio", "Congiunzione finale", "Avverbio di tempo"], c: 0, e: "Esprime incertezza."},
-    {q: "Analisi di 'per':", a: ["Preposizione semplice", "Congiunzione", "Avverbio"], c: 0, e: "Indica scopo, causa, moto o tempo."},
-    {q: "Analisi di 'ahi!':", a: ["Interiezione propria", "Avverbio", "Nome"], c: 0, e: "Esclamazione che esprime dolore."}
+    // --- PARTI INVARIABILI (43-50) ---
+    {q: "Analisi di 'bene':", a: ["Avverbio di modo", "Aggettivo qualificativo", "Nome"], c: 0, e: "Specifica come avviene l'azione."},
+    {q: "Analisi di 'fra':", a: ["Preposizione semplice", "Preposizione articolata", "Avverbio"], c: 0, e: "Una delle 9 preposizioni semplici (di, a, da, in, con, su, per, tra, fra)."},
+    {q: "Analisi di 'non':", a: ["Avverbio di negazione", "Congiunzione", "Pronome"], c: 0, e: "Serve a negare il significato della frase."},
+    {q: "Analisi di 'perché' (es. non esco perché piove):", a: ["Congiunzione subordinante causale", "Preposizione", "Pronome"], c: 0, e: "Unisce due frasi indicando il motivo (causa)."},
+    {q: "Analisi di 'nello':", a: ["Preposizione articolata (in + lo)", "Articolo", "Avverbio"], c: 0, e: "Unione di preposizione semplice e articolo determinativo."},
+    {q: "Analisi di 'ma':", a: ["Congiunzione avversativa", "Avverbio di tempo", "Preposizione"], c: 0, e: "Esprime un'opposizione."},
+    {q: "Analisi di 'laggiù':", a: ["Avverbio di luogo", "Avverbio di tempo", "Interiezione"], c: 0, e: "Indica una posizione lontana da chi parla."},
+    {q: "Analisi di 'urrà!':", a: ["Interiezione propria (Esclamazione)", "Avverbio", "Verbo"], c: 0, e: "Esprime gioia o esultanza."}
 ];
 
 let current = 0; let score = 0; let name = ""; let timer; let timeLeft = 30; let mistakes = [];
 
+// Funzione FullScreen e Avvio
 function startQuiz() {
     name = document.getElementById('student-name').value.trim();
-    if (!name) { alert("Inserisci il tuo nome prima di iniziare!"); return; }
+    if (!name) { alert("Inserisci il tuo nome per validare l'esame."); return; }
+    
+    // Attivazione Schermo Intero
+    let elem = document.documentElement;
+    if (elem.requestFullscreen) { elem.requestFullscreen(); }
+    else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
+    else if (elem.msRequestFullscreen) { elem.msRequestFullscreen(); }
+
     document.getElementById('setup').style.display = 'none';
     document.getElementById('quiz-ui').style.display = 'block';
     loadQ();
@@ -184,10 +285,7 @@ function loadQ() {
 function countDown() {
     timeLeft--;
     document.getElementById('timer').innerText = timeLeft;
-    if(timeLeft <= 0) { 
-        clearInterval(timer); 
-        check(-1); 
-    }
+    if(timeLeft <= 0) { clearInterval(timer); check(-1); }
 }
 
 function check(idx) {
@@ -222,20 +320,26 @@ function showEnd() {
     document.getElementById('results').style.display = 'block';
     document.getElementById('certificate').style.display = 'block';
     document.getElementById('cert-name').innerText = name;
-    document.getElementById('cert-score').innerText = `${score} / ${db.length}`;
     
+    // Calcolo Voto in Decimi
+    const voto = (score / db.length) * 10;
+    document.getElementById('cert-voto').innerText = voto.toFixed(1) + " / 10";
+    document.getElementById('cert-score').innerText = score;
+    
+    let giudizio = "";
+    if(voto >= 9) giudizio = "Eccellente: Conoscenza della lingua magistrale.";
+    else if(voto >= 7.5) giudizio = "Ottimo: Competenze grammaticali molto solide.";
+    else if(voto >= 6) giudizio = "Sufficiente: Conoscenza basilare, si consiglia ripasso.";
+    else giudizio = "Gravemente Insufficiente: Necessario recupero didattico.";
+    document.getElementById('cert-giudizio').innerText = giudizio;
+
     const list = document.getElementById('recap-list');
     list.innerHTML = ""; 
-    if(mistakes.length === 0) {
-        list.innerHTML = "<p>Eccellente! Nessun errore commesso.</p>";
-    } else {
-        mistakes.forEach(m => {
-            list.innerHTML += `<div class="recap-item"><strong>${m.q}</strong><br>Risposta corretta: <em>${m.c}</em></div>`;
-        });
-    }
+    mistakes.forEach(m => {
+        list.innerHTML += `<div class="recap-item"><strong>${m.q}</strong><br>La risposta corretta era: <em>${m.c}</em></div>`;
+    });
 }
 </script>
 
 </body>
 </html>
-
