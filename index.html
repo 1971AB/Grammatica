@@ -243,6 +243,15 @@ const db = [
 
 let current = 0; let score = 0; let name = ""; let timer; let timeLeft = 30; let mistakes = [];
 
+// Funzione Shuffle (Fisher-Yates)
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
 // Funzione FullScreen e Avvio
 function startQuiz() {
     name = document.getElementById('student-name').value.trim();
@@ -271,11 +280,15 @@ function loadQ() {
     const opts = document.getElementById('options'); 
     opts.innerHTML = '';
     
-    q.a.forEach((t, i) => {
+    // Mescoliamo una copia delle risposte
+    const shuffledAnswers = shuffleArray([...q.a]);
+    
+    shuffledAnswers.forEach((t) => {
         const b = document.createElement('button'); 
         b.className = 'btn-opt'; 
         b.innerText = t;
-        b.onclick = () => check(i); 
+        // Troviamo l'indice originale del testo scelto per il controllo
+        b.onclick = () => check(q.a.indexOf(t)); 
         opts.appendChild(b);
     });
     
